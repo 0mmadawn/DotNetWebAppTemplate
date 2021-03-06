@@ -1,0 +1,88 @@
+﻿@model web.ViewModels.Users.EditViewModel
+@using web.Models.Entities
+@using web.Common.Enums
+@using web.Common.Extensions
+@using web.Helpers
+<div class="row">
+    @{
+        var user = Model.User;
+        var hasNameError = Model.Errors.ContainsKey(nameof(user.Name));
+        var hasGroupError = Model.Errors.ContainsKey(nameof(user.Group));
+        var hasDescriptonError = Model.Errors.ContainsKey(nameof(user.Description));
+    }
+    <h1>@Model.H1</h1>
+    <form id="UserEdit"
+          asp-controller="User"
+          asp-action="Update"
+          asp-route-id="@user.Id"
+          method="post">
+        @if (Model.Errors.Any())
+        {
+            <div class="u-full-width" style="font-size: 0.8em;">
+                <span>Error</span>
+                <ul>
+                    @foreach (KeyValuePair<string, List<string>> kvp in Model.Errors)
+                    {
+                        <li>@kvp.Key: @string.Join($"{Environment.NewLine}¥t", kvp.Value)</li>
+                    }
+                </ul>
+            </div>
+        }
+        @{
+            // asp-validation-for周りのクライアントサイド周りのvalidationは
+            // 挙動が怪しい(個人の意見)ので利用を避ける
+            // asp-forによる自動生成も利用しない
+            // クライアントサイドの検証は必要に応じて自前で実装
+        }
+        <div class="row">
+            <div class="form-group six columns">
+                @*
+                以下使わない labelはどっちでもいい
+                <label asp-for="@name">名前</label>
+                <input asp-for="@name" />
+                <span asp-validation-for="@name"></span>
+                *@
+                <label for="name">名前</label>
+                <input type="text" id="name" name="name"
+                       value="@user.Name" class="@(hasNameError ? "error" : "") u-full-width">
+            </div>
+            <div class="@(hasGroupError ? "error" : "") form-group six columns">
+                <label for="group">所属</label>
+                @{
+                    // 本当はHtml.GetEnumSelectList<Group>()を使いたいけど
+                    // asp-forを避けるため自前で実装
+                    var groupList = Html.GetEnumSelectList<Group>((byte)(user.Group));
+                }
+                <select id="group" name="group" class="@(hasGroupError ? "error" : "") u-full-width">
+                    <option value="">選択してください</option>
+                    @foreach (var item in groupList)
+                    {
+                        <option selected="@item.Selected" value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="description">備考</label>
+            <input type="text" id="description" name="description"
+                   value="@user.Description" class="@(hasDescriptonError ? "error" : "") u-full-width">
+        </div>
+
+        <div style="margin-top:3rem;">
+            <input class="button-primary" type="submit" value="Submit">
+            <a class="button u-pull-right"
+               asp-controller="User"
+               asp-action="Index">
+                Back to Index
+            </a>
+            <div class="u-cf"></div>
+        </div>
+    </form>
+
+
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        @*必要に応じて*@
+    </script>
+}

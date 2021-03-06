@@ -1,0 +1,32 @@
+﻿@model web.ViewModels.Users.ShowViewModel
+@using web.Models.Entities
+@using web.Common.Extensions
+<div class="row">
+    @{
+        var user = Model.User;
+    }
+    <h1>@user.Name</h1>
+
+    <div>
+        <span><b>ID:&nbsp; </b>@user.Id</span><br />
+        <span><b>組織:&nbsp;</b>@user.Group.DisplayName()</span><br />
+        <span><b>備考:&nbsp;</b>@user.Description</span><br />
+    </div>
+
+    <div style="margin-top:3rem;">
+        <a class="button button-primary"
+           asp-controller="User"
+           asp-action="Edit"
+           asp-route-id=@user.Id>
+           Edit
+        </a>
+
+        <a class="button u-pull-right"
+           asp-controller="User"
+           asp-action="Index">
+            Back to Index
+        </a>
+        <div class="u-cf"></div>
+    </div>
+
+</div>

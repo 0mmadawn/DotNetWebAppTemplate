@@ -1,0 +1,47 @@
+﻿@model web.ViewModels.Users.IndexViewModel
+@using web.Models.Entities
+@using web.Common.Extensions
+<div class="row">
+    <h1>@Model.H1</h1>
+    <table class="u-full-width">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名前</th>
+                <th>組織</th>
+                <th>備考</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (User user in Model.Users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>
+                        <a asp-controller="User"
+                           asp-action="Show"
+                           asp-route-id="@user.Id">@user.Name
+                        </a>
+                    </td>
+                    <td>@user.Group.DisplayName()</td>
+                    <td>@user.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- TODO: delete-->
+    <div>
+        <a class="button"
+           asp-controller="User"
+           asp-action="ErrorSample">
+            500エラーを起こす
+        </a>
+        <a class="button" href="/error">
+            500エラー画面への直アクセス(200)
+        </a>
+        <a class="button" href="/notfound">
+            404エラーを起こす
+        </a>
+    </div>
+
+</div>

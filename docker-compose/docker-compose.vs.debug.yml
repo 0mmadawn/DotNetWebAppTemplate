@@ -1,0 +1,31 @@
+version: '3.4'
+
+# file for VisualStudioForMac debbuging
+
+services:
+  web:
+    image: web:dev
+    container_name: web
+    build:
+      target: base
+      labels:
+        com.microsoft.created-by: "visual-studio"
+        com.microsoft.visual-studio.project-name: "web"
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - NUGET_FALLBACK_PACKAGES=
+    volumes:
+      - ../web:/app
+      - ../:/src
+      # TODO EDIT
+      - /Users/tom/vsdbg/vs2017u5:/remote_debugger:rw
+      - /Users/tom/.nuget/packages/:/root/.nuget/packages:ro
+    entrypoint: tail -f /dev/null
+
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "/wait-for-it.sh"
+      com.microsoft.visualstudio.debuggee.arguments: "db:3306 -t 60 -- dotnet --additionalProbingPath /root/.nuget/packages \"/app/bin/Debug/net5.0/web.dll\""
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.debuggee.killprogram: "/bin/sh -c \"if PID=$$(pidof dotnet); then kill $$PID; fi\""
+    tty: true

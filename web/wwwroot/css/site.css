@@ -1,0 +1,5 @@
+﻿/* 申し訳程度のエラー用色付け */
+.error {
+    border-left: 2px solid red;
+    padding-left: 2px;
+}

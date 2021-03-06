@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  web:
+    image: ${DOCKER_REGISTRY-}web
+    build:
+      context: ../
+      dockerfile: web/Dockerfile
+    environment:
+        ReadOnlyConnection: "server=db;database=dev;user id=root;password=root;"
+        WriteConnection: "server=db;database=dev;user id=root;password=root;"
+    depends_on:
+          - db
+    entrypoint: ["/wait-for-it.sh", "db:3306", "-t", "120", "--", "dotnet", "web.dll"]
+ 
+
+  db:
+    image: mysql:8.0
+    environment:
+        MYSQL_ROOT_PASSWORD: root   
+        MYSQL_DATABASE: dev
+        MYSQL_USER: docker
+        MYSQL_PASSWORD: docker
+        TZ: 'Asia/Tokyo'
+    command: mysqld
+    volumes:
+        - ../db/my.cnf:/etc/mysql/conf.d/my.cnf
+        # DBを毎回初期化する場合
+        - ../db/initdb.d:/docker-entrypoint-initdb.d
+        # DBをマウントして使う場合
+        # - ../db/data:/var/lib/mysql
+    ports:
+        - 3306:3306
